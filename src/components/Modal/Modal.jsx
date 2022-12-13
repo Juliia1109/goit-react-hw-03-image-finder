@@ -13,18 +13,25 @@ componentWillUnmount() {
     window.removeEventListener("keydown",this.closeByEsc);
 }
 
-  closeByEsc = (e) => {
+  closeByEsc = e => {
         if(e.code === "Escape") {
             this.props.onClose()
         }
     }
 
+  closeBackdrop = e => {
+    if (e.target === e.currentTarget) {
+      this.props.onClose();
+    }
+  };
+
   render() {
-   const { src, alt } = this.props;
+  
+   const { closeBackdrop } = this;
     return (
-<div className={css.Overlay} onClick={this.closeByEsc}>
+<div className={css.Overlay} onClick={closeBackdrop}>
 <div className={css.Modal}>
-<img src={src} alt={alt} />
+<img src={this.props.img} alt={this.props.alt} />
 </div>
 </div>
     );
@@ -32,7 +39,7 @@ componentWillUnmount() {
 }
 
 Modal.propTypes = {
-  src: PropTypes.string.isRequired,
-  alt: PropTypes.string.isRequired,
-  onClose: PropTypes.func.isRequired,
+	img: PropTypes.string.isRequired,
+	alt: PropTypes.string.isRequired,
+	onClose: PropTypes.func.isRequired,
 }

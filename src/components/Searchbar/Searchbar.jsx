@@ -12,24 +12,22 @@ export default class Searchbar extends Component {
     this.setState({ searchInput: e.currentTarget.value });
   }
 
-    handleSubmit = e => {
-      const { searchInput } = this.state;
+  handleSubmit = e => {
     e.preventDefault();
-    this.props.onSubmit(searchInput);
-    this.reset();
-  }
-
-  reset = () => {
+   if (this.state.searchInput.trim() === '') {
+      return;
+    }
+    this.props.onSubmit(this.state.searchInput);
     this.setState({ searchInput: '' });
   };
 
   render() {
     const { searchInput } = this.state;
-    const { handleChange } = this;
+    const { handleChange, handleSubmit } = this;
     return (
      <div>
      <header className={css.Searchbar}>
-     <form className={css.SearchForm} onSubmit={this.handleSubmit}>
+     <form className={css.SearchForm} onSubmit={handleSubmit}>
      <button type="submit" className={css.SearchFormButton} >
      <MdSavedSearch style={{ width: 25, height: 25 }} />
     </button>
@@ -37,8 +35,8 @@ export default class Searchbar extends Component {
      className={css.SearchFormInput}
      value={searchInput}
      type="text"
-    //  autocomplete="off"
-    //  autofocus
+     autoComplete="off"
+     autoFocus
      placeholder="Search images and photos"
      onChange={handleChange}
     />
@@ -48,7 +46,6 @@ export default class Searchbar extends Component {
     )
   }
 }
-
 
 Searchbar.propTypes = {
   onSubmit: PropTypes.func.isRequired,

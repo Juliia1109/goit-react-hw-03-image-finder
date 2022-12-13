@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Notiflix from 'notiflix';
-import { fetchImages } from './services/pixabayAPI';
+import { fetchImages } from 'services/pixabayAPI';
 import Searchbar from './Searchbar';
 import ImageGallery from './ImageGallery';
 import Button from './Button';
@@ -45,8 +45,9 @@ fetchImages(searchInput, page)
     Notiflix.Notify.info(`Hooray! We found ${totalHits} images.`);
   }
 
-  const arrayImages = hits.map(({ webformatURL, largeImageURL, tags }) => {
+  const arrayImages = hits.map(({id, webformatURL, largeImageURL, tags }) => {
     return {
+      id,
       webformatURL,
       largeImageURL,
       tags,
@@ -62,23 +63,26 @@ fetchImages(searchInput, page)
 }
 
 
-
-  handleOnSubmit= searchInput => {
-    this.setState({ searchInput, page: 1 });
+  handleOnSubmit= (searchInput)=> {
+    if (searchInput=== this.state.searchInput)
+    return;
+    this.setState({ images: [], searchInput, page: 1 });
   };
 
+ 
   openModal = e => {
-  const largeImageUrl = e.target.dataset.large;
-  const tags = e.target.alt;
-  this.setState({ largeImageUrl, tags });
-  this.toggleModal();
-  }
+    this.setState(() => ({
+      largeImageURL: e.target.dataset.large,
+      tags: e.target.alt,
+    }));
+    this.toggleModal();
+  };
+
 
   showImages  = () => {
-    this.setState(({ page }) => ({
-      page: page + 1,
-      isLoading: true,
-    }));
+      this.setState(prevState => {
+      return { page: prevState.page + 1 };
+    });
   };
 
   toggleModal = () => {
@@ -86,19 +90,27 @@ fetchImages(searchInput, page)
       showModal: !showModal,
     }));
   };
-  
+
   render() {
-const { images, isLoading, showModal, largeImageUrl, tags } = this.state;
-const { handleOnSubmit, openModal, showImages, toggleModal } = this;
-  
+const { images, showModal, isLoading, largeImageURL, tags } = this.state;
+const { handleOnSubmit, showImages,  openModal, toggleModal } = this;
     return (
-      <div className={css.Container}>
+    <div className={css.Container}>
+
     <Searchbar onSubmit={handleOnSubmit}/> 
-    {images && <ImageGallery images={images} openModal={openModal} />}  
-    {isLoading && <Loader />}  
-    {images.length > 0 ? (<Button text="Load more" handleClick={showImages} />) : null}
-    {showModal && (<Modal src={largeImageUrl} alt={tags} onClose={toggleModal}/>)}
-      </div>
+
+    {images.length > 0 && 
+    (<ImageGallery images={images} openModal={openModal} />)}
+
+    {isLoading && <Loader />} 
+
+    {images.length > 0 && !isLoading && images.length !== this.state.total && 
+    (<Button text="Load more" handleClick={showImages} />)}
+
+    {showModal && 
+    (<Modal onClose={toggleModal} img={largeImageURL} alt={tags} />)}
+
+    </div>
     );
   }
 }
