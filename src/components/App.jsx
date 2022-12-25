@@ -12,7 +12,7 @@ export class App extends Component {
   state = {
     images: [],
     isLoading: false,
-    showModal: false,
+    // showModal: false,
     largeImageURL: '',
     tags: '',
     page: 1,
@@ -75,7 +75,7 @@ fetchImages(searchInput, page)
       largeImageURL: e.target.dataset.large,
       tags: e.target.alt,
     }));
-    this.toggleModal();
+    // this.toggleModal();
   };
 
 
@@ -85,15 +85,13 @@ fetchImages(searchInput, page)
     });
   };
 
-  toggleModal = () => {
-    this.setState(({ showModal }) => ({
-      showModal: !showModal,
-    }));
+ closeModal = () => {
+    this.setState({largeImageURL: ''});
   };
 
   render() {
-const { images, showModal, isLoading, largeImageURL, tags } = this.state;
-const { handleOnSubmit, showImages,  openModal, toggleModal } = this;
+const { images, isLoading, largeImageURL, tags } = this.state;
+const { handleOnSubmit, showImages,  openModal, closeModal} = this;
     return (
     <div className={css.Container}>
 
@@ -107,8 +105,8 @@ const { handleOnSubmit, showImages,  openModal, toggleModal } = this;
     {images.length > 0 && !isLoading && images.length !== this.state.total && 
     (<Button text="Load more" handleClick={showImages} />)}
 
-    {showModal && 
-    (<Modal onClose={toggleModal} img={largeImageURL} alt={tags} />)}
+    {largeImageURL && 
+    (<Modal onClose={closeModal} img={largeImageURL} alt={tags} />)}
 
     </div>
     );
